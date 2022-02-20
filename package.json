@@ -1,0 +1,35 @@
+{
+  "name": "pt-auth",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start_docker": "nodemon server.js",
+    "start": "export MONGO_ROOT_USERNAME=root && export MONGO_ROOT_PASSWORD=root_pw && node server.js",
+    "prod": "export NODE_ENV=production && node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amirl1086/pt-auth.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/amirl1086/pt-auth/issues"
+  },
+  "homepage": "https://github.com/amirl1086/pt-auth#readme",
+  "dependencies": {
+    "amqplib": "^0.8.0",
+    "config": "^3.3.7",
+    "cors": "^2.8.5",
+    "express": "^4.17.3",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.2.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.9.0",
+    "nodemon": "^2.0.15"
+  }
+}

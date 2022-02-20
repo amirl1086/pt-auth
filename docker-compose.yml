@@ -1,0 +1,37 @@
+version: "3.8"
+
+services:
+  auth_db:
+    image: mongo:5
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "${MONGO_INIT_USERNAME}"
+      MONGO_INITDB_ROOT_PASSWORD: "${MONGO_INIT_PASSWORD}"
+    ports:
+      - "27012:27017"
+    networks:
+      - pt-auth-dev-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo auth_db:27017/test --quiet
+      timeout: 30s
+      interval: 5s
+      retries: 6
+    container_name: pt-auth-mongodb
+  auth:
+    build:
+      dockerfile: Dockerfile.dev
+      context: .
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "${MONGO_INIT_USERNAME}"
+      MONGO_INITDB_ROOT_PASSWORD: "${MONGO_INIT_PASSWORD}"
+    networks:
+      - pt-auth-dev-network
+    depends_on:
+      auth_db:
+        condition: service_healthy
+    container_name: pt-auth
+
+networks:
+  pt-auth-dev-network:
+    name: pt-dev-network
+    external: true

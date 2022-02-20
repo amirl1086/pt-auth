@@ -1,0 +1,24 @@
+{
+  "server": {
+    "port": 5050,
+    "host": "localhost"
+  },
+  "remotes": {
+    "mongodb": {
+      "host": "auth_db",
+      "port": 27017
+    },
+    "rabbitmq": {
+      "host": "rabbitmq",
+      "exchange": "user-exchange",
+      "queue": "user-queue",
+      "key": "user"
+    }
+  },
+  "auth": {
+    "roles": ["user", "moderator", "admin"]
+  },
+  "jwt": {
+    "timeout": 86400
+  }
+}
