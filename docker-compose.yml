@@ -18,12 +18,18 @@ services:
       retries: 6
     container_name: pt-auth-mongodb
   auth:
+    image: pt-auth
     build:
       dockerfile: Dockerfile.dev
       context: .
     environment:
       MONGO_INITDB_ROOT_USERNAME: "${MONGO_INIT_USERNAME}"
       MONGO_INITDB_ROOT_PASSWORD: "${MONGO_INIT_PASSWORD}"
+    ports:
+      - "5050:5050"
+    volumes:
+      - /app/node_modules
+      - ./:/app
     networks:
       - pt-auth-dev-network
     depends_on:
