@@ -1,6 +1,7 @@
 
 // app config
 const express = require("express");
+const crypto = require("crypto");
 const cors = require("cors");
 const app = express();
 
@@ -15,18 +16,13 @@ app.use(cors({origin: `http://${config.server.host}:${port}`}));
 
 const db = require('./lib/mongo/db');
 
-const errorHandler = (err, req, res, next) => {
-    console.log('error handler middleware');
-    console.error(`error stack: ${err.stack}`);
-    res.status(err.statusCode).send(err.message);
-};
-
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
     console.log('server headers middleware');
-    res.header(
-        "Access-Control-Allow-Headers",
-        "x-access-token, Origin, Content-Type, Accept"
-    );
+    res.set({
+        'Access-Control-Allow-Headers': 'x-access-token, Origin, Content-Type, Accept',
+        'SCID': crypto.randomUUID(),
+        'FCID': crypto.randomUUID()
+    })
     next();
 });
 
@@ -34,13 +30,23 @@ app.use(function (req, res, next) {
 app.use('/api', routes);
 
 //errors middleware
-app.use(errorHandler);
+app.use((err, req, res, next) => {
+    // console.log('error handler middleware');
+    console.error(`middleware error: ${err}`);
+    res.status(err.statusCode).send(err.message);
+});
 
 
 (async () => { // eslint-disable-line no-unexpected-multiline
-    await db.connect('admin');
-    app.listen(port, () => {
-        console.log(`auth app listening at http://localhost:${port}`)
-    });
+    try {
+        await db.connect('admin');
+        app.listen(port, () => {
+            console.log(`auth app listening at http://localhost:${port}`)
+        });
+    } catch (err) {
+        console.error(`error starting server, ${err}`);
+        process.exit(1);
+    }
+
 })();
 
