@@ -15,6 +15,7 @@ app.use(express.urlencoded({ extended: true })); // parse requests of content-ty
 app.use(cors({origin: `http://${config.server.host}:${port}`}));
 
 const db = require('./lib/mongo/db');
+const logger = require('./logger').logger
 
 app.use((req, res, next) => {
     console.log('server headers middleware');
@@ -28,6 +29,7 @@ app.use((req, res, next) => {
 
 // routes
 app.use('/api', routes);
+const winston = require('winston');
 
 //errors middleware
 app.use((err, req, res, next) => {
@@ -41,10 +43,13 @@ app.use((err, req, res, next) => {
     try {
         await db.connect('admin');
         app.listen(port, () => {
-            console.log(`auth app listening at http://localhost:${port}`)
+            log_message = 'auth app listening at http://localhost:' + port
+            console.log(log_message)
+            logger.log({level: 'info', message: log_message});
         });
     } catch (err) {
         console.error(`error starting server, ${err}`);
+        logger.log({level: 'error', message: 'error starting server, ' + err});
         process.exit(1);
     }
 
