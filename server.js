@@ -15,10 +15,11 @@ app.use(express.urlencoded({ extended: true })); // parse requests of content-ty
 app.use(cors({origin: `http://${config.server.host}:${port}`}));
 
 const db = require('./lib/mongo/db');
-const logger = require('./logger').logger
+const logger = require('./logger')
 
 app.use((req, res, next) => {
-    console.log('server headers middleware');
+    logger.log({level: 'info', message: 'server headers middleware'});
+
     res.set({
         'Access-Control-Allow-Headers': 'x-access-token, Origin, Content-Type, Accept',
         'SCID': crypto.randomUUID(),
@@ -34,7 +35,7 @@ const winston = require('winston');
 //errors middleware
 app.use((err, req, res, next) => {
     // console.log('error handler middleware');
-    console.error(`middleware error: ${err}`);
+    logger.log({level: 'error', message: 'middleware error:' + err});
     res.status(err.statusCode).send(err.message);
 });
 
@@ -43,12 +44,9 @@ app.use((err, req, res, next) => {
     try {
         await db.connect('admin');
         app.listen(port, () => {
-            log_message = 'auth app listening at http://localhost:' + port
-            console.log(log_message)
-            logger.log({level: 'info', message: log_message});
+            logger.log({level: 'info', message: 'auth app listening at http://localhost:' + port});
         });
     } catch (err) {
-        console.error(`error starting server, ${err}`);
         logger.log({level: 'error', message: 'error starting server, ' + err});
         process.exit(1);
     }

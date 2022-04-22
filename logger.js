@@ -19,9 +19,8 @@ const logger = winston.createLogger({
       // - Write all logs with importance level of `info` or less to `combined.log`
       new winston.transports.File({ filename: 'error.log', level: 'error' , timestamp : true}),
       new winston.transports.File({ filename: 'debug.log'}), 
+      new winston.transports.Console()
     ],
   });
 
-  module.exports = {
-    logger
-}
+  module.exports = logger
