@@ -4,6 +4,7 @@ const express = require("express");
 const crypto = require("crypto");
 const cors = require("cors");
 const app = express();
+const logger = require('./logger')
 
 const config = require('config');
 const port = config.server.port;
@@ -16,7 +17,8 @@ app.use(express.urlencoded({ extended: true })); // parse requests of content-ty
 app.use(cors({origin: `http://${config.server.host}:${port}`}));
 
 app.use((req, res, next) => {
-    console.log('server headers middleware');
+    logger.log({level: 'info', message: 'server headers middleware'});
+
     res.set({
         'Access-Control-Allow-Headers': 'x-access-token, Origin, Content-Type, Accept',
         'SCID': crypto.randomUUID(),
@@ -27,7 +29,7 @@ app.use((req, res, next) => {
 app.use('/api', routes);
 app.use((err, req, res, next) => {
     // console.log('error handler middleware');
-    console.error('middleware error: ', err);
+    logger.error('middleware error: ', err);
     res.status(err.statusCode).send(err.message);
 });
 
@@ -35,10 +37,16 @@ app.use((err, req, res, next) => {
 (async () => { // eslint-disable-line no-unexpected-multiline
     try {
         app.listen(port, () => {
-            console.log(`auth app listening at http://localhost:${port}`);
+            logger.info(`auth app listening at http://localhost:${port}`);
         });
     } catch (err) {
-        console.error('error starting server: ', err);
+        logger.error('error starting server: ', err);
         process.exit(1);
     }
+
+    process.once('SIGINT', async () => {
+        console.log('received SIGINT, closing connection');
+        await rabbitmqClient.close();
+        process.exit(0);
+    });
 })();
