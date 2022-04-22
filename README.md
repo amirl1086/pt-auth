@@ -8,6 +8,7 @@
 ## How to run
 ### Docker
 - Run `./run_compose.sh`
+- Connect to DB via port 27011
 
 ### Node
 - Run `node server.js`

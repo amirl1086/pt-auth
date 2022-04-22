@@ -22,7 +22,7 @@ app.use((req, res, next) => {
         'Access-Control-Allow-Headers': 'x-access-token, Origin, Content-Type, Accept',
         'SCID': crypto.randomUUID(),
         'FCID': crypto.randomUUID()
-    })
+    });
     next();
 });
 
@@ -32,7 +32,7 @@ app.use('/api', routes);
 //errors middleware
 app.use((err, req, res, next) => {
     // console.log('error handler middleware');
-    console.error(`middleware error: ${err}`);
+    console.error(`middleware error: ${JSON.stringify(err, '', 4)}`);
     res.status(err.statusCode).send(err.message);
 });
 
@@ -41,12 +41,11 @@ app.use((err, req, res, next) => {
     try {
         await db.connect('admin');
         app.listen(port, () => {
-            console.log(`auth app listening at http://localhost:${port}`)
+            console.log(`auth app listening at http://localhost:${port}`);
         });
     } catch (err) {
         console.error(`error starting server, ${err}`);
         process.exit(1);
     }
-
 })();
 
